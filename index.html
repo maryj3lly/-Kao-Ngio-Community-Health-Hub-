@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b49">
+  <meta name="description" content="Kao Ngio Community Health Hub — Digital tools for collecting community data in Ban Kao Ngio">
+  <title>Kao Ngio Community Health Hub | Digital Community Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="assets/css/data-tools.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+  <main class="login-screen" id="loginView">
+    <form class="login-card" id="loginForm" autocomplete="on">
+      <a class="brand login-brand" href="#home" aria-label="Kao Ngio Community Health Hub">
+        <span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 40 14v20L24 43 8 34V14L24 5Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 15v18M15 24h18" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span>
+        <span class="brand-copy"><strong>Kao Ngio</strong><b>Community Hub</b><small>COMMUNITY HEALTH DATA</small></span>
+      </a>
+      <div class="eyebrow dark-eyebrow">COMMUNITY WORKSPACE</div>
+      <h1>เข้าสู่ระบบ</h1>
+      <p class="login-intro">ลงชื่อเข้าใช้เพื่อเปิดเครื่องมือจัดเก็บข้อมูลชุมชน</p>
+      <label class="data-field" for="loginUsername">ชื่อผู้ใช้
+        <input id="loginUsername" name="username" type="text" autocomplete="username" required autofocus>
+      </label>
+      <label class="data-field" for="loginPassword">รหัสผ่าน
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="login-error" id="loginError" role="alert" aria-live="polite"></p>
+      <button class="button button-primary login-submit" type="submit">เข้าสู่ระบบ</button>
+      <p class="login-notice">ลงชื่อเข้าใช้สำหรับผู้ใช้งานที่ได้รับอนุญาต</p>
+    </form>
+  </main>
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar" id="sidebar" aria-label="เมนูหลัก">
+      <a class="brand" href="#home" aria-label="Kao Ngio Community Health Hub หน้าหลัก">
+        <span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 40 14v20L24 43 8 34V14L24 5Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 15v18M15 24h18" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span>
+        <span class="brand-copy"><strong>Kao Ngio</strong><b>Community Hub</b><small>COMMUNITY HEALTH DATA</small></span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="main-nav">
+        <a class="nav-link active" href="#home" data-nav="home"><span class="nav-icon">⌂</span><span>ภาพรวม</span></a>
+        <a class="nav-link" href="#tools" data-nav="tools"><span class="nav-icon">▦</span><span>เครื่องมือทั้งหมด</span><span class="nav-count">07</span></a>
+        <a class="nav-link" href="#guide" data-nav="guide"><span class="nav-icon">ⓘ</span><span>แนวทางการใช้งาน</span></a>
+      </nav>
+
+      <div class="nav-label nav-label-spaced">เครื่องมือชุมชน</div>
+      <nav class="tool-nav" id="sidebarTools"></nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-note">
+          <span class="note-icon">✦</span>
+          <strong>พื้นที่สำหรับการเรียนรู้</strong>
+          <p>เครื่องมือดิจิทัลเพื่อสนับสนุนการสำรวจและทำความเข้าใจชุมชน</p>
+        </div>
+        <div class="sidebar-footer"><span class="online-dot"></span> Google Sheet · ระบบบันทึกจริง</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><i>/</i><strong id="breadcrumbCurrent">ภาพรวม</strong></div>
+        <div class="topbar-actions">
+          <button class="button button-outline auth-button" id="logoutButton" type="button">ออกจากระบบ</button>
+        </div>
+      </header>
+      <section class="page-view" id="homeView">
+        <section class="hero">
+          <div class="hero-content">
+            <div class="eyebrow"><span class="eyebrow-line"></span> KAO NGIO COMMUNITY DISCOVERY</div>
+            <h1>เข้าใจชุมชน<br><em>เริ่มต้นจากข้อมูล</em></h1>
+            <p>พื้นที่ทำงานดิจิทัลสำหรับสำรวจ เรียนรู้ และรวบรวมองค์ความรู้ของชุมชนอย่างเป็นระบบ</p>
+            <div class="hero-actions">
+              <a class="button button-light" href="#tools">สำรวจเครื่องมือ <span>→</span></a>
+              <a class="hero-text-link" href="https://script.google.com/macros/s/AKfycbwvnymt6nKdC08qVMP6jo88_8SdxU2i1BeuEY4KbfBP/exec" target="_blank" rel="noopener noreferrer">เข้าใช้งานระบบจริง <span>↗</span></a>
+              <a class="hero-text-link" href="#guide">ดูแนวทางการใช้งาน <span>↗</span></a>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="hero-orb"><span class="orb-cross">+</span><span class="orb-dot"></span></div>
+            <div class="float-card float-card-top"><span class="float-icon">⌖</span><span><b>Community</b><small>Mapping & Insight</small></span></div>
+            <div class="float-card float-card-bottom"><span class="float-icon mint">✳</span><span><b>7 Digital Tools</b><small>One connected hub</small></span></div>
+            <div class="art-spark spark-a">✦</div><div class="art-spark spark-b">·</div>
+          </div>
+          <div class="hero-watermark">CHH / 01</div>
+        </section>
+
+        <section class="stats-row" aria-label="ภาพรวมแพลตฟอร์ม">
+          <article class="stat-card"><span class="stat-icon teal">▦</span><div><strong>07</strong><span>เครื่องมือดิจิทัล</span></div><small>TOOLS</small></article>
+          <article class="stat-card"><span class="stat-icon navy">⌘</span><div><strong>03</strong><span>หมวดหมู่การศึกษา</span></div><small>CATEGORIES</small></article>
+          <article class="stat-card"><span class="stat-icon mint">↗</span><div><strong>01</strong><span>แพลตฟอร์มศูนย์กลาง</span></div><small>PLATFORM</small></article>
+          <article class="stat-card stat-status"><span class="status-ring"></span><div><strong>Google Sheet</strong><span>เปิดระบบบันทึกข้อมูลจริง</span></div><small>DATABASE</small></article>
+        </section>
+
+        <section class="section-block" id="toolSection">
+          <div class="section-heading">
+            <div><div class="eyebrow dark-eyebrow">YOUR COMMUNITY WORKSPACE</div><h2>เครื่องมือสำรวจชุมชน</h2><p>เลือกเครื่องมือที่ต้องการเพื่อดูรายละเอียดและแนวทางการใช้งาน</p></div>
+            <a class="view-all" href="#tools">ดูเครื่องมือทั้งหมด <span>→</span></a>
+          </div>
+          <div class="toolbar">
+            <label class="search-box"><span>⌕</span><input id="toolSearch" type="search" placeholder="ค้นหาชื่อเครื่องมือ หรือคำอธิบาย..." autocomplete="off"><kbd>/</kbd></label>
+            <div class="filter-wrap"><label for="categoryFilter" class="sr-only">กรองตามหมวดหมู่</label><select id="categoryFilter"><option value="all">ทุกหมวดหมู่</option><option value="mapping">แผนที่และโครงสร้างชุมชน</option><option value="health">สุขภาพและกิจกรรมชุมชน</option><option value="identity">ประวัติและอัตลักษณ์ชุมชน</option></select></div>
+          </div>
+          <div class="results-meta"><span id="resultCount">แสดงเครื่องมือ 7 รายการ</span><span class="meta-status"><i></i> แบบบันทึกข้อมูล 7 เครื่องมือ</span></div>
+          <div class="tool-grid" id="toolGrid"></div>
+          <div class="empty-state hidden" id="emptyState"><span>⌕</span><h3>ไม่พบเครื่องมือที่ค้นหา</h3><p>ลองเปลี่ยนคำค้นหาหรือเลือกหมวดหมู่อื่น</p><button class="button button-outline" id="clearFilters">ล้างตัวกรอง</button></div>
+        </section>
+
+        <section class="bottom-banner">
+          <div class="banner-symbol">✳</div><div><span class="eyebrow">BUILT FOR COMMUNITY LEARNING</span><h3>ข้อมูลชุมชนที่ดี เริ่มต้นจากการสำรวจอย่างเข้าใจ</h3><p>ใช้เครื่องมืออย่างมีจริยธรรม เคารพสิทธิ และคำนึงถึงความเป็นส่วนตัวของคนในชุมชน</p></div><a href="#guide" aria-label="อ่านแนวทาง">↗</a>
+        </section>
+        <footer class="page-footer"><span>© <span id="year"></span> Kao Ngio Community Health Hub</span><span>Digital Tools for Ban Kao Ngio Community Data</span><span>Google Sheets · 7 Tools</span></footer>
+      </section>
+
+      <section class="page-view secondary-view hidden" id="toolsView">
+        <div class="page-intro"><div class="eyebrow dark-eyebrow">TOOL DIRECTORY / 07 MODULES</div><h1>เครื่องมือทั้งหมด</h1><p>ศูนย์รวมเครื่องมือดิจิทัลสำหรับการสำรวจและศึกษาชุมชน</p></div>
+        <div class="toolbar"><label class="search-box"><span>⌕</span><input id="toolSearchAll" type="search" placeholder="ค้นหาเครื่องมือ..." autocomplete="off"></label><div class="filter-wrap"><select id="categoryFilterAll" aria-label="กรองตามหมวดหมู่"><option value="all">ทุกหมวดหมู่</option><option value="mapping">แผนที่และโครงสร้างชุมชน</option><option value="health">สุขภาพและกิจกรรมชุมชน</option><option value="identity">ประวัติและอัตลักษณ์ชุมชน</option></select></div></div>
+        <div class="results-meta"><span id="resultCountAll">แสดงเครื่องมือ 7 รายการ</span><span class="meta-status"><i></i> แบบบันทึกข้อมูลพร้อมใช้งาน</span></div>
+        <div class="tool-grid" id="toolGridAll"></div>
+        <div class="empty-state hidden" id="emptyStateAll"><span>⌕</span><h3>ไม่พบเครื่องมือที่ค้นหา</h3><p>ลองเปลี่ยนคำค้นหาหรือเลือกหมวดหมู่อื่น</p></div>
+      </section>
+
+      <section class="page-view secondary-view hidden" id="detailView">
+        <button class="back-link" id="backToTools">← กลับไปยังเครื่องมือทั้งหมด</button>
+        <div id="toolDetail"></div>
+      </section>
+
+      <section class="page-view secondary-view hidden" id="guideView">
+        <div class="page-intro"><div class="eyebrow dark-eyebrow">GETTING STARTED</div><h1>แนวทางการใช้งาน</h1><p>ทำความรู้จักแพลตฟอร์มและหลักการใช้งานเครื่องมืออย่างรับผิดชอบ</p></div>
+        <div class="guide-grid">
+          <article class="guide-card"><span class="guide-number">01</span><span class="guide-icon">⌘</span><h3>เลือกเครื่องมือให้เหมาะสม</h3><p>เลือกเครื่องมือที่สอดคล้องกับข้อมูลที่ต้องการศึกษา แล้วเปิดระบบ Smart Community 7 Tools ด้วยบัญชี Google ที่ได้รับอนุญาต</p></article>
+          <article class="guide-card"><span class="guide-number">02</span><span class="guide-icon">✎</span><h3>บันทึกและจัดการข้อมูล</h3><p>แบบฟอร์มในหน้านี้เป็นตัวอย่างและเก็บข้อมูลในเครื่อง หากต้องการบันทึกจริง ให้เปิดระบบ Smart Community 7 Tools ผ่านลิงก์ด้านบน</p></article>
+          <article class="guide-card"><span class="guide-number">03</span><span class="guide-icon">♧</span><h3>เคารพสิทธิชุมชน</h3><p>ขอความยินยอมก่อนเก็บพิกัดบ้าน ผังครอบครัว หรือเรื่องเล่าชีวิต จำกัดผู้เข้าถึงเฉพาะผู้ได้รับอนุญาต</p></article>
+          <article class="guide-card"><span class="guide-number">04</span><span class="guide-icon">▤</span><h3>ตรวจสอบข้อมูลก่อนใช้</h3><p>ตรวจสอบความครบถ้วนและแหล่งที่มา รวมถึงพิจารณาความยินยอมก่อนเผยแพร่หรือส่งต่อ</p></article>
+        </div>
+        <div class="notice-card"><span class="notice-icon">!</span><div><strong>เปิดระบบ Google ที่เชื่อมกับฐานข้อมูลจริง</strong><p>แบบฟอร์มทดลองในหน้านี้เก็บข้อมูลในเบราว์เซอร์เครื่องนี้เท่านั้น หากต้องการบันทึกลงชีตจริง ให้เปิดระบบ Smart Community 7 Tools และเข้าสู่ระบบด้วยบัญชีที่ได้รับอนุญาต</p><p><a href="https://script.google.com/macros/s/AKfycbwvnymt6nKdC08qVMP6jo88_8SdxU2i1BeuEY4KbfBP/exec" target="_blank" rel="noopener noreferrer">เข้าใช้งานระบบ Smart Community 7 Tools ↗</a> · <a href="https://docs.google.com/spreadsheets/d/1a89ZBrl-tNd-_jeWLY8U-2hgaHJHc6jGqV4NjiXYa3E/edit" target="_blank" rel="noopener noreferrer">เปิด Google Sheet ↗</a></p></div></div>
+      </section>
+    </main>
+  </div>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
