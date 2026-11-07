@@ -74,7 +74,7 @@ function renderDetail(tool) {
     <div class="tool-purpose"><strong>วัตถุประสงค์</strong><p>${tool.purpose}</p></div>
     <div class="tool-safety"><strong>ข้อควรทราบ</strong><p>${escapeHtml(schema.notice)}</p></div>
     ${isLocalMode() ? '<div class="local-storage-warning" role="note"><strong>โหมดทดลอง — บันทึกในเครื่องนี้เท่านั้น</strong><p>ข้อมูลจะไม่ซิงก์ไป Google Sheet หรืออุปกรณ์อื่น และอาจหายเมื่อเคลียร์ข้อมูลเว็บไซต์ หากต้องการบันทึกจริง ให้เปิดเว็บไซต์ผ่าน HTTPS และลงชื่อเข้าใช้ Google</p></div>' : ""}
-    <div class="auth-required hidden" id="authRequired"><h2>เซสชัน Google หมดอายุ</h2><p>ออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้งเพื่อเชื่อมต่อกับ Google Sheet</p></div>
+    <div class="auth-required hidden" id="authRequired"><h2>เชื่อมต่อบัญชี Google เพื่อดูข้อมูล</h2><p>ใช้บัญชี Google ใดก็ได้ที่มีสิทธิ์แก้ไขชีต ระบบจะขอเชื่อมต่อเมื่อเปิดดูหรือบันทึกข้อมูล</p><button class="button button-primary" id="connectGoogleButton" type="button">เชื่อมต่อ Google</button><span id="authStatus" class="record-status" role="status" aria-live="polite"></span></div>
     <div class="tool-workspace hidden" id="toolWorkspace">
       <form class="record-form" id="recordForm">
         <div class="workspace-heading"><div><div class="eyebrow dark-eyebrow">DATA ENTRY</div><h2 id="recordFormTitle">เพิ่มรายการ</h2></div><span class="workspace-owner" id="workspaceOwner"></span></div>
@@ -281,6 +281,11 @@ async function onRecordSubmit(event) {
     if (await loadToolRecords(tool)) $("#recordStatus").textContent = "บันทึกข้อมูลสำเร็จ";
   } catch (error) {
     $("#recordStatus").textContent = `บันทึกไม่สำเร็จ: ${error.message}`;
+    if (!isLocalMode() && !getSignedInEmail()) {
+      $("#toolWorkspace").classList.add("hidden");
+      $("#authRequired").classList.remove("hidden");
+      $("#authStatus").textContent = "เซสชันหมดอายุ กรุณาเชื่อมต่อ Google อีกครั้ง";
+    }
   } finally {
     if (button.isConnected) button.disabled = false;
   }
@@ -425,7 +430,7 @@ function initWorkspace() {
   showRoute();
 }
 
-$("#loginForm").addEventListener("submit", async event => {
+$("#loginForm").addEventListener("submit", event => {
   event.preventDefault();
   const username = $("#loginUsername").value.trim();
   const password = $("#loginPassword").value;
@@ -437,23 +442,33 @@ $("#loginForm").addEventListener("submit", async event => {
   }
 
   $("#loginError").textContent = "";
-  const submitButton = $("#loginForm button[type='submit']");
-  submitButton.disabled = true;
-  submitButton.textContent = isLocalMode() ? "กำลังเข้าสู่ระบบ..." : "กำลังเชื่อมต่อ Google...";
-  try {
-    if (!isLocalMode()) await signIn();
-  } catch (error) {
-    $("#loginError").textContent = `เชื่อมต่อ Google Sheet ไม่สำเร็จ: ${error.message}`;
-    return;
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = "เข้าสู่ระบบ";
-  }
-
   $("#loginView").hidden = true;
   $("#appShell").hidden = false;
   if (!workspaceInitialized) {
     initWorkspace();
     workspaceInitialized = true;
+  }
+});
+
+async function connectGoogleAndLoad(tool) {
+  const button = $("#connectGoogleButton");
+  const status = $("#authStatus");
+  if (!button || !status) return;
+  button.disabled = true;
+  status.textContent = "กำลังเชื่อมต่อ Google...";
+  try {
+    await signIn();
+    status.textContent = "";
+    await loadToolRecords(tool);
+  } catch (error) {
+    status.textContent = `เชื่อมต่อ Google Sheet ไม่สำเร็จ: ${error.message}`;
+  } finally {
+    if (button.isConnected) button.disabled = false;
+  }
+}
+
+document.addEventListener("click", event => {
+  if (event.target.closest("#connectGoogleButton") && state.activeTool) {
+    connectGoogleAndLoad(state.activeTool);
   }
 });
