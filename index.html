@@ -23,7 +23,7 @@
       </a>
       <div class="eyebrow dark-eyebrow">COMMUNITY WORKSPACE</div>
       <h1>เข้าสู่ระบบ</h1>
-      <p class="login-intro">ลงชื่อเข้าใช้เพื่อเปิดเครื่องมือจัดเก็บข้อมูลชุมชน</p>
+      <p class="login-intro">ลงชื่อเข้าใช้เพื่อเปิดเครื่องมือจัดเก็บข้อมูลชุมชน ระบบจะเชื่อมต่อบัญชี Google เพื่อบันทึกข้อมูลลงชีต</p>
       <label class="data-field" for="loginUsername">ชื่อผู้ใช้
         <input id="loginUsername" name="username" type="text" autocomplete="username" required autofocus>
       </label>
@@ -145,6 +145,7 @@
     </main>
   </div>
   <div class="mobile-overlay" id="mobileOverlay"></div>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

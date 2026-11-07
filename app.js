@@ -1,6 +1,6 @@
 import { tools, categories } from "./data.js";
 import { formSchemas } from "./tool-forms.js";
-import { archiveRecord, getSignedInEmail, isLocalMode, listRecords, saveRecord } from "./google-sheets.js";
+import { archiveRecord, getSignedInEmail, isLocalMode, listRecords, saveRecord, signIn, signOut } from "./google-sheets.js";
 import { locateUser, renderCommunityMap, setDraftMarker } from "./community-map.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -341,6 +341,7 @@ function initWorkspace() {
   $("#year").textContent = new Date().getFullYear();
   syncHomeFilters();
   $("#logoutButton").addEventListener("click", () => {
+    signOut();
     $("#appShell").hidden = true;
     $("#loginView").hidden = false;
     $("#loginForm").reset();
@@ -423,7 +424,7 @@ function initWorkspace() {
   showRoute();
 }
 
-$("#loginForm").addEventListener("submit", event => {
+$("#loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   const username = $("#loginUsername").value.trim();
   const password = $("#loginPassword").value;
@@ -435,6 +436,19 @@ $("#loginForm").addEventListener("submit", event => {
   }
 
   $("#loginError").textContent = "";
+  const submitButton = $("#loginForm button[type='submit']");
+  submitButton.disabled = true;
+  submitButton.textContent = isLocalMode() ? "กำลังเข้าสู่ระบบ..." : "กำลังเชื่อมต่อ Google...";
+  try {
+    if (!isLocalMode()) await signIn();
+  } catch (error) {
+    $("#loginError").textContent = `เชื่อมต่อ Google Sheet ไม่สำเร็จ: ${error.message}`;
+    return;
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "เข้าสู่ระบบ";
+  }
+
   $("#loginView").hidden = true;
   $("#appShell").hidden = false;
   if (!workspaceInitialized) {

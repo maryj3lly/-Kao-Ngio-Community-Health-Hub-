@@ -1,4 +1,4 @@
-const CLIENT_ID = "";
+const CLIENT_ID = "121730968281-4ng2d9ae739s34g2vs2f7vup99sgh2rj.apps.googleusercontent.com";
 const SPREADSHEET_ID = "1a89ZBrl-tNd-_jeWLY8U-2hgaHJHc6jGqV4NjiXYa3E";
 const SHEET_NAME = "Tool Records";
 const HEADERS = ["รหัส", "เครื่องมือ", "สร้างเมื่อ", "แก้ไขล่าสุด", "ผู้บันทึก", "ข้อมูล JSON", "ลบเมื่อ"];
