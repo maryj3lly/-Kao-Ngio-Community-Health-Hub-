@@ -1,6 +1,6 @@
 import { tools, categories } from "./data.js";
 import { formSchemas } from "./tool-forms.js";
-import { archiveRecord, getSignedInEmail, isLocalMode, listRecords, saveRecord, signIn, signOut } from "./google-sheets.js";
+import { archiveRecord, getSignedInEmail, isLocalMode, listRecords, saveRecord, signIn, signOut } from "./google-sheets.js?oauth=1";
 import { locateUser, renderCommunityMap, setDraftMarker } from "./community-map.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
